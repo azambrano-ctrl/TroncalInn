@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Admin – TroncalInn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --amber:#C8860A; --amber-lt:#E9C46A; --green:#2D6A4F; --green-lt:#52B788;
+      --cream:#FDFAF3; --brown:#6B4226; --text:#2C2C2C; --text-lt:#6B6B6B;
+      --white:#FFFFFF; --sidebar:260px; --danger:#C0392B; --success:#27AE60;
+      --bg:#F4F0E8; --card:#FFFFFF; --border:#E5DDD0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Nunito',sans-serif;color:var(--text);background:var(--bg);display:flex;min-height:100vh}
+
+    /* ── SIDEBAR ── */
+    .sidebar{
+      width:var(--sidebar);flex-shrink:0;background:var(--brown);
+      display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;
+      overflow-y:auto;z-index:100;
+    }
+    .sidebar-brand{
+      padding:1.8rem 1.5rem 1.4rem;
+      border-bottom:1px solid rgba(255,255,255,.1);
+    }
+    .brand-name{
+      font-family:'Playfair Display',serif;color:var(--white);
+      font-size:1.4rem;line-height:1;margin-bottom:.2rem;
+    }
+    .brand-sub{font-size:.72rem;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase}
+
+    .nav-section{padding:.8rem 1rem .3rem;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35)}
+    .sidebar nav a{
+      display:flex;align-items:center;gap:.8rem;
+      padding:.7rem 1.2rem;color:rgba(255,255,255,.7);font-size:.9rem;font-weight:600;
+      text-decoration:none;border-radius:10px;margin:.15rem .6rem;
+      transition:background .2s,color .2s;
+    }
+    .sidebar nav a:hover,.sidebar nav a.active{background:rgba(255,255,255,.12);color:var(--white)}
+    .sidebar nav a .ico{font-size:1.1rem;width:22px;text-align:center}
+
+    .sidebar-footer{margin-top:auto;padding:1.2rem 1.5rem;border-top:1px solid rgba(255,255,255,.1)}
+    .btn-preview{
+      display:block;text-align:center;background:var(--amber);color:var(--white);
+      padding:.65rem;border-radius:10px;font-weight:700;font-size:.9rem;text-decoration:none;
+      transition:background .3s;
+    }
+    .btn-preview:hover{background:var(--amber-lt);color:var(--brown)}
+
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar);flex:1;padding:2rem 2.5rem;max-width:calc(100vw - var(--sidebar))}
+
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:2rem;
+    }
+    .page-title{font-family:'Playfair Display',serif;font-size:1.8rem}
+    .page-sub{font-size:.9rem;color:var(--text-lt);margin-top:.2rem}
+
+    .toast{
+      position:fixed;top:1.5rem;right:1.5rem;z-index:999;
+      background:var(--success);color:var(--white);
+      padding:.8rem 1.4rem;border-radius:12px;font-weight:600;font-size:.9rem;
+      box-shadow:0 4px 20px rgba(0,0,0,.2);
+      opacity:0;transform:translateY(-10px);
+      transition:opacity .3s,transform .3s;pointer-events:none;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    /* ── TABS ── */
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+
+    /* ── CARD ── */
+    .card{background:var(--card);border-radius:16px;padding:1.8rem;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:1.5rem}
+    .card-title{font-size:1rem;font-weight:700;margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:.5rem}
+    .card-title .ico{font-size:1.2rem}
+
+    /* ── FORM ELEMENTS ── */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+    .form-group{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.8rem}
+    .form-group.full{grid-column:1/-1}
+    label{font-size:.8rem;font-weight:700;color:var(--text-lt);letter-spacing:.3px;text-transform:uppercase}
+    input[type=text],input[type=url],input[type=email],input[type=tel],input[type=number],textarea,select{
+      border:2px solid var(--border);border-radius:10px;
+      padding:.65rem .9rem;font-family:'Nunito',sans-serif;font-size:.95rem;
+      color:var(--text);background:var(--cream);outline:none;
+      transition:border-color .25s;width:100%;
+    }
+    input:focus,textarea:focus,select:focus{border-color:var(--amber)}
+    textarea{resize:vertical;min-height:80px}
+    .img-preview{
+      width:100%;height:120px;object-fit:cover;border-radius:8px;
+      margin-top:.5rem;border:2px solid var(--border);
+      background:#e8e2d5;display:block;
+    }
+
+    /* ── ROOM BLOCK ── */
+    .room-block{
+      border:2px solid var(--border);border-radius:14px;
+      padding:1.3rem;margin-bottom:1rem;background:var(--cream);
+      position:relative;
+    }
+    .room-block-title{
+      font-weight:700;font-size:1rem;margin-bottom:1rem;
+      display:flex;align-items:center;gap:.6rem;color:var(--brown);
+    }
+    .room-num{
+      background:var(--amber);color:var(--white);
+      width:26px;height:26px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:.8rem;font-weight:700;
+    }
+
+    /* ── AMENITY BLOCK ── */
+    .amen-block{
+      border:2px solid var(--border);border-radius:12px;
+      background:var(--cream);margin-bottom:.7rem;overflow:hidden;
+    }
+    .amen-block-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:.8rem 1rem;cursor:pointer;user-select:none;
+      transition:background .2s;
+    }
+    .amen-block-header:hover{background:#ede8dd}
+    .amen-arrow{font-size:.75rem;color:var(--text-lt);transition:transform .2s}
+    .amen-body{
+      max-height:300px;opacity:1;
+      transition:max-height .35s ease,opacity .25s ease;
+      overflow:hidden;
+    }
+    .amen-inner{
+      display:grid;grid-template-columns:60px 1fr 1fr;gap:.8rem;align-items:start;
+      padding:.2rem 1rem 1rem;
+    }
+    .amen-icon-preview{
+      font-size:2rem;background:var(--white);border-radius:10px;
+      height:52px;display:flex;align-items:center;justify-content:center;
+      border:2px solid var(--border);
+    }
+    .btn-add-amen{
+      width:100%;border:2px dashed var(--border);border-radius:12px;
+      background:none;padding:.8rem;font-family:'Nunito',sans-serif;
+      font-size:.9rem;font-weight:700;color:var(--amber);cursor:pointer;
+      transition:border-color .2s,background .2s;margin-top:.3rem;
+    }
+    .btn-add-amen:hover{border-color:var(--amber);background:#fff8e8}
+
+    /* ── EMOJI PICKER ── */
+    .emoji-pick-btn{
+      width:100%;margin-top:.4rem;background:var(--amber);color:#fff;
+      border:none;border-radius:8px;padding:.3rem;font-size:.72rem;
+      font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;
+      transition:background .2s;
+    }
+    .emoji-pick-btn:hover{background:var(--brown)}
+    .emoji-popover{
+      position:fixed;z-index:9999;background:#fff;border-radius:16px;
+      box-shadow:0 8px 40px rgba(0,0,0,.22);padding:1rem;width:300px;
+      max-height:420px;overflow-y:auto;display:none;
+    }
+    .emoji-popover.open{display:block}
+    .emoji-pop-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem}
+    .emoji-pop-head strong{font-size:.9rem}
+    .emoji-pop-close{background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-lt);line-height:1}
+    .emoji-cat-label{font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-lt);margin:.6rem 0 .3rem;font-weight:700}
+    .emoji-row{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.2rem}
+    .emoji-opt{
+      font-size:1.6rem;width:38px;height:38px;border-radius:8px;
+      border:2px solid transparent;background:var(--cream);
+      cursor:pointer;display:flex;align-items:center;justify-content:center;
+      transition:border-color .15s,background .15s;
+    }
+    .emoji-opt:hover{border-color:var(--amber);background:#fff8e8}
+
+    /* ── GALLERY ── */
+    .gallery-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+    .gallery-item-edit{
+      position:relative;border:2px solid var(--border);border-radius:12px;
+      overflow:hidden;background:var(--cream);
+    }
+    .gallery-item-edit img{width:100%;height:130px;object-fit:cover}
+    .gallery-item-edit .g-controls{
+      padding:.6rem;display:flex;flex-direction:column;gap:.4rem;
+    }
+    .gallery-item-edit input{font-size:.8rem;padding:.4rem .6rem}
+    .btn-del{
+      background:var(--danger);color:var(--white);border:none;
+      border-radius:8px;padding:.35rem .7rem;font-size:.78rem;font-weight:700;
+      cursor:pointer;transition:opacity .2s;font-family:'Nunito',sans-serif;
+    }
+    .btn-del:hover{opacity:.85}
+    .btn-add-gallery{
+      border:2px dashed var(--border);border-radius:12px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:.5rem;cursor:pointer;min-height:180px;
+      color:var(--text-lt);font-size:.9rem;font-weight:600;
+      background:none;width:100%;font-family:'Nunito',sans-serif;
+      transition:border-color .2s,color .2s;
+    }
+    .btn-add-gallery:hover{border-color:var(--amber);color:var(--amber)}
+
+    /* ── UPLOAD ── */
+    .img-field{display:flex;flex-direction:column;gap:.5rem}
+    .img-input-row{display:flex;gap:.5rem;align-items:center}
+    .img-input-row input{flex:1;min-width:0}
+    .btn-upload{
+      flex-shrink:0;background:var(--green);color:#fff;border:none;
+      padding:.65rem .9rem;border-radius:10px;font-family:'Nunito',sans-serif;
+      font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;
+      transition:background .2s;display:flex;align-items:center;gap:.35rem;
+    }
+    .btn-upload:hover{background:var(--green-lt)}
+    .gallery-add-row{display:flex;gap:.7rem;margin-bottom:1rem}
+    .gallery-add-row button{flex:1}
+
+    /* ── ICON PICKER ── */
+    .icon-modal-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:1rem}
+    .icon-modal{background:#fff;border-radius:20px;padding:1.8rem;width:100%;max-width:520px;max-height:85vh;display:flex;flex-direction:column;gap:1rem;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+    .icon-modal-head{display:flex;justify-content:space-between;align-items:center}
+    .icon-modal-head h3{font-size:1.1rem;font-weight:700}
+    .icon-modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-lt);line-height:1;padding:.2rem}
+    .icon-modal-close:hover{color:var(--text)}
+    .icon-search{border:2px solid var(--border);border-radius:10px;padding:.65rem 1rem;font-family:'Nunito',sans-serif;font-size:.95rem;outline:none;width:100%;transition:border-color .2s}
+    .icon-search:focus{border-color:var(--amber)}
+    .icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:.5rem;overflow-y:auto;padding:.2rem}
+    .icon-btn{border:2px solid var(--border);border-radius:12px;padding:.7rem .4rem;background:var(--cream);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.4rem;transition:border-color .2s,background .2s;font-family:'Nunito',sans-serif}
+    .icon-btn:hover{border-color:var(--amber);background:#fff8e8}
+    .icon-btn i{font-size:1.5rem;color:var(--amber)}
+    .icon-btn span{font-size:.62rem;color:var(--text-lt);text-align:center;line-height:1.2}
+    .btn-icon-change{background:var(--amber);color:#fff;border:none;border-radius:8px;padding:.35rem .7rem;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;width:100%;margin-top:.4rem;transition:background .2s}
+    .btn-icon-change:hover{background:var(--brown)}
+
+    /* ── SAVE BAR ── */
+    .save-bar{
+      position:sticky;bottom:0;left:0;right:0;
+      background:rgba(253,250,243,.95);backdrop-filter:blur(8px);
+      border-top:2px solid var(--border);
+      padding:1rem 0;margin-top:2rem;
+      display:flex;justify-content:flex-end;gap:1rem;
+    }
+    .btn-save{
+      background:var(--amber);color:var(--white);border:none;
+      padding:.75rem 2rem;border-radius:30px;font-family:'Nunito',sans-serif;
+      font-size:1rem;font-weight:700;cursor:pointer;transition:background .3s,transform .2s;
+    }
+    .btn-save:hover{background:var(--brown);transform:translateY(-2px)}
+    .btn-reset{
+      background:transparent;color:var(--text-lt);border:2px solid var(--border);
+      padding:.75rem 1.5rem;border-radius:30px;font-family:'Nunito',sans-serif;
+      font-size:.95rem;font-weight:600;cursor:pointer;transition:border-color .3s;
+    }
+    .btn-reset:hover{border-color:var(--danger);color:var(--danger)}
+
+    /* ── STATS ── */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+    .stat-card{background:var(--card);border-radius:14px;padding:1.4rem;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+    .stat-num{font-family:'Playfair Display',serif;font-size:2rem;color:var(--amber);line-height:1}
+    .stat-label{font-size:.8rem;color:var(--text-lt);margin-top:.3rem}
+
+    @media(max-width:900px){
+      .sidebar{width:60px}
+      .sidebar .brand-name,.sidebar .brand-sub,.sidebar nav a span,.nav-section,.sidebar-footer .btn-preview span{display:none}
+      .sidebar nav a{justify-content:center;padding:.8rem;margin:.15rem .3rem}
+      .sidebar nav a .ico{width:auto}
+      .main{margin-left:60px}
+      .stats-row{grid-template-columns:1fr 1fr}
+      .form-grid,.form-grid-3{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-name">TroncalInn</div>
+    <div class="brand-sub">Panel Admin</div>
+  </div>
+
+  <div class="nav-section">Contenido</div>
+  <nav>
+    <a href="#" class="active" onclick="showTab('general',this)">
+      <span class="ico">🏨</span><span>General</span>
+    </a>
+    <a href="#" onclick="showTab('hero',this)">
+      <span class="ico">🖼️</span><span>Hero</span>
+    </a>
+    <a href="#" onclick="showTab('rooms',this)">
+      <span class="ico">🛏️</span><span>Habitaciones</span>
+    </a>
+    <a href="#" onclick="showTab('gallery',this)">
+      <span class="ico">📷</span><span>Galería</span>
+    </a>
+    <a href="#" onclick="showTab('amenities',this)">
+      <span class="ico">✨</span><span>Amenidades</span>
+    </a>
+    <a href="#" onclick="showTab('restaurant',this)">
+      <span class="ico">🍽️</span><span>Restaurante</span>
+    </a>
+    <a href="#" onclick="showTab('contact',this)">
+      <span class="ico">📞</span><span>Contacto</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+<!-- EMOJI POPOVER -->
+<div class="emoji-popover" id="emojiPopover">
+  <div class="emoji-pop-head">
+    <strong>Elegir icono</strong>
+    <button class="emoji-pop-close" onclick="closeEmojiPicker()">✕</button>
+  </div>
+  <div id="emojiPopBody"></div>
+</div>
+
+<!-- ICON PICKER MODAL (legacy, mantenido) -->
+<div class="icon-modal-overlay" id="iconModal" style="display:none" onclick="if(event.target===this)closeIconPicker()">
+  <div class="icon-modal">
+    <div class="icon-modal-head">
+      <h3>🎨 Elegir icono</h3>
+      <button class="icon-modal-close" onclick="closeIconPicker()">✕</button>
+    </div>
+    <input class="icon-search" id="iconSearch" placeholder="Buscar: piscina, wifi, restaurante..." oninput="filterIcons(this.value)" />
+    <div class="icon-grid" id="iconGrid"></div>
+  </div>
+</div>
+
+    <a href="index.html" target="_blank" class="btn-preview" style="margin-bottom:.6rem">
+      <span>👁️ Ver sitio web</span>
+    </a>
+    <button onclick="logout()" style="width:100%;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border:none;padding:.55rem;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:background .2s">
+      🚪 Cerrar sesión
+    </button>
+  </div>
+</aside>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ Cambios guardados correctamente</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="pageTitle">General</div>
+      <div class="page-sub" id="pageSub">Configura la información básica del hotel</div>
+    </div>
+  </div>
+
+  <!-- ── GENERAL ── -->
+  <div class="tab-panel active" id="tab-general">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="statRooms">3</div><div class="stat-label">Habitaciones</div></div>
+      <div class="stat-card"><div class="stat-num" id="statGallery">6</div><div class="stat-label">Fotos en galería</div></div>
+      <div class="stat-card"><div class="stat-num" id="statAmen">6</div><div class="stat-label">Amenidades</div></div>
+      <div class="stat-card"><div class="stat-num" id="statRestFeat">4</div><div class="stat-label">Platos destacados</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="ico">🏨</span>Información general</div>
+      <div class="form-group">
+        <label>Nombre del hotel</label>
+        <input type="text" id="gen_hotelName" placeholder="TroncalInn" />
+      </div>
+      <div class="form-group">
+        <label>Logo del hotel <span style="color:var(--text-lt);font-weight:400">(se muestra en el Hero)</span></label>
+        <div class="img-field">
+          <div class="img-input-row">
+            <input type="text" id="gen_logo" placeholder="https://... o sube tu logo"
+              oninput="previewImg('gen_logo','gen_logoPreview')" />
+            <button class="btn-upload" onclick="uploadImage('gen_logo','gen_logoPreview')">📁 Subir logo</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;margin-top:.5rem">
+            <img id="gen_logoPreview" src="" alt="Logo" style="max-height:80px;max-width:200px;object-fit:contain;border-radius:8px;border:2px solid var(--border);padding:.4rem;background:#fff;display:none" />
+            <button id="gen_logoRemove" onclick="removeLogo()" style="display:none;background:none;border:2px solid var(--danger);color:var(--danger);border-radius:8px;padding:.3rem .8rem;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer">🗑 Quitar logo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HERO ── -->
+  <div class="tab-panel" id="tab-hero">
+    <div class="card">
+      <div class="card-title"><span class="ico">🖼️</span>Sección Hero (portada)</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Etiqueta superior</label>
+          <input type="text" id="hero_label" placeholder="La Troncal · Ecuador" />
+        </div>
+        <div class="form-group full">
+          <label>Título principal (HTML permitido, ej: &lt;em&gt;)</label>
+          <input type="text" id="hero_title" placeholder="Bienvenido a &lt;em&gt;TroncalInn&lt;/em&gt;" />
+        </div>
+        <div class="form-group full">
+          <label>Subtítulo</label>
+          <textarea id="hero_subtitle" rows="2"></textarea>
+        </div>
+        <div class="form-group full">
+          <label>Imagen de fondo</label>
+          <div class="img-field">
+            <div class="img-input-row">
+              <input type="text" id="hero_bgImage" placeholder="https://... o sube un archivo" oninput="previewImg('hero_bgImage','hero_bgPreview')" />
+              <button class="btn-upload" onclick="uploadImage('hero_bgImage','hero_bgPreview')">📁 Subir foto</button>
+            </div>
+            <img class="img-preview" id="hero_bgPreview" src="" alt="Vista previa fondo" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HABITACIONES ── -->
+  <div class="tab-panel" id="tab-rooms">
+    <div class="card">
+      <div class="card-title"><span class="ico">🛏️</span>Habitaciones</div>
+      <div id="roomsEditor"></div>
+    </div>
+  </div>
+
+  <!-- ── GALERÍA ── -->
+  <div class="tab-panel" id="tab-gallery">
+    <div class="card">
+      <div class="card-title"><span class="ico">📷</span>Galería de imágenes</div>
+      <p style="font-size:.85rem;color:var(--text-lt);margin-bottom:1.2rem">
+        Agrega URLs de imágenes. La galería se desplaza horizontalmente en el sitio web.
+      </p>
+      <div class="gallery-list" id="galleryEditor"></div>
+    </div>
+  </div>
+
+  <!-- ── AMENIDADES ── -->
+  <div class="tab-panel" id="tab-amenities">
+    <div class="card">
+      <div class="card-title"><span class="ico">✨</span>Imagen y badge</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Imagen principal</label>
+          <div class="img-field">
+            <div class="img-input-row">
+              <input type="text" id="amen_image" placeholder="https://... o sube un archivo" oninput="previewImg('amen_image','amen_imgPreview')" />
+              <button class="btn-upload" onclick="uploadImage('amen_image','amen_imgPreview')">📁 Subir foto</button>
+            </div>
+            <img class="img-preview" id="amen_imgPreview" src="" alt="Vista previa" />
+          </div>
+        </div>
+        <div>
+          <div class="form-group">
+            <label>Número del badge (ej: 10+)</label>
+            <input type="text" id="amen_badgeNum" placeholder="10+" />
+          </div>
+          <div class="form-group">
+            <label>Texto del badge</label>
+            <input type="text" id="amen_badgeText" placeholder="Años de experiencia" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="ico">✨</span>Lista de amenidades</div>
+      <div id="amenEditor"></div>
+    </div>
+  </div>
+
+  <!-- ── RESTAURANTE ── -->
+  <div class="tab-panel" id="tab-restaurant">
+    <div class="card">
+      <div class="card-title"><span class="ico">🍽️</span>Sección restaurante</div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--cream);border:2px solid var(--border);border-radius:12px;padding:.9rem 1.2rem;margin-bottom:1.2rem">
+        <div>
+          <div style="font-weight:700;font-size:.95rem">Visibilidad en el sitio</div>
+          <div style="font-size:.8rem;color:var(--text-lt);margin-top:.15rem">Activa o desactiva la sección Restaurante</div>
+        </div>
+        <label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer;flex-shrink:0">
+          <input type="checkbox" id="rest_visible" style="opacity:0;width:0;height:0"
+            onchange="updateRestToggle(this.checked)" />
+          <span id="rest_toggle_track" style="position:absolute;inset:0;border-radius:28px;background:#ccc;transition:background .3s"></span>
+          <span id="rest_toggle_thumb" style="position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:left .3s"></span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>Título</label>
+        <input type="text" id="rest_title" />
+      </div>
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea id="rest_desc" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Características (una por línea)</label>
+        <textarea id="rest_features" rows="5" placeholder="Cocina ecuatoriana&#10;Desayuno, almuerzo y cena&#10;..."></textarea>
+      </div>
+      <div class="form-grid-3">
+        <div class="form-group">
+          <label>Imagen 1 (grande)</label>
+          <div class="img-field">
+            <div class="img-input-row">
+              <input type="text" id="rest_image1" placeholder="https://... o sube" oninput="previewImg('rest_image1','rest_prev1')" />
+              <button class="btn-upload" onclick="uploadImage('rest_image1','rest_prev1')">📁 Subir</button>
+            </div>
+            <img class="img-preview" id="rest_prev1" src="" alt="" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Imagen 2</label>
+          <div class="img-field">
+            <div class="img-input-row">
+              <input type="text" id="rest_image2" placeholder="https://... o sube" oninput="previewImg('rest_image2','rest_prev2')" />
+              <button class="btn-upload" onclick="uploadImage('rest_image2','rest_prev2')">📁 Subir</button>
+            </div>
+            <img class="img-preview" id="rest_prev2" src="" alt="" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Imagen 3</label>
+          <div class="img-field">
+            <div class="img-input-row">
+              <input type="text" id="rest_image3" placeholder="https://... o sube" oninput="previewImg('rest_image3','rest_prev3')" />
+              <button class="btn-upload" onclick="uploadImage('rest_image3','rest_prev3')">📁 Subir</button>
+            </div>
+            <img class="img-preview" id="rest_prev3" src="" alt="" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CONTACTO ── -->
+  <div class="tab-panel" id="tab-contact">
+    <div class="card">
+      <div class="card-title"><span class="ico">📞</span>Información de contacto</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Dirección (HTML permitido para saltos de línea: &lt;br/&gt;)</label>
+          <input type="text" id="contact_address" />
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" id="contact_phone" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="contact_email" />
+        </div>
+        <div class="form-group">
+          <label>Hora de Check-in</label>
+          <input type="text" id="contact_checkin" placeholder="14h00" />
+        </div>
+        <div class="form-group">
+          <label>Hora de Check-out</label>
+          <input type="text" id="contact_checkout" placeholder="12h00" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVE BAR -->
+  <div class="save-bar">
+    <button class="btn-reset" onclick="resetData()">↩ Restaurar defaults</button>
+    <button class="btn-save" onclick="saveData()">💾 Guardar cambios</button>
+  </div>
+</main>
+
+<script>
+/* ── DEFAULTS (mismo objeto que index.html) ── */
+const DEFAULTS = {
+  general: { hotelName: 'TroncalInn', logo: '' },
+  hero: {
+    label: 'La Troncal · Ecuador',
+    title: 'Bienvenido a<br /><em>TroncalInn</em>',
+    subtitle: 'Un refugio de confort y calidez en el corazón del Ecuador. Descanso auténtico, atención personalizada.',
+    bgImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1800&q=80'
+  },
+  rooms: [
+    { name: 'Individual',   desc: 'Ideal para viajeros que buscan comodidad y privacidad.',                                           price: '25', features: 'WiFi,TV Cable,Baño Privado,AC',         image: 'images/hab-individual.webp' },
+    { name: 'Matrimonial',  desc: 'Perfecta para parejas, con una cómoda cama doble.',                                               price: '30', features: 'WiFi,TV Cable,Baño Privado,AC',         image: 'images/hab-matrimonial.jpg' },
+    { name: 'Doble',        desc: 'Equipada con dos camas individuales, ideal para amigos o compañeros de trabajo.',                 price: '35', features: 'WiFi,TV Cable,Baño Privado,AC',         image: 'images/hab-doble.webp'      },
+    { name: 'Triple',       desc: 'Espaciosa habitación con tres camas individuales o una doble y una individual.',                  price: '50', features: 'WiFi,TV Cable,Baño Privado,AC,Garaje',  image: 'images/hab-triple.jpg'      },
+    { name: 'Cuádruple',    desc: 'La opción más amplia para familias o grupos, con capacidad para cuatro personas.',                price: '65', features: 'WiFi,TV Cable,Baño Privado,AC,Garaje',  image: 'images/hab-cuadruple.webp'  }
+  ],
+  gallery: [
+    { image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&q=80', alt: 'Lobby' },
+    { image: 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800&q=80', alt: 'Piscina' },
+    { image: 'https://images.unsplash.com/photo-1551882547-ff40c4fe1da0?w=800&q=80', alt: 'Habitación' },
+    { image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', alt: 'Restaurante' },
+    { image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800&q=80', alt: 'Jardín' },
+    { image: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800&q=80', alt: 'Bar' }
+  ],
+  amenities: {
+    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80',
+    badgeNum: '10+', badgeText: 'Años de experiencia',
+    items: [
+      { icon: '📶', name: 'WiFi de alta velocidad', desc: 'Conexión rápida en todas las habitaciones y áreas comunes.' },
+      { icon: '🚿', name: 'Baño privado',           desc: 'Baño privado con agua caliente disponible las 24 horas.' },
+      { icon: '📺', name: 'TV por cable',            desc: 'Televisión por cable con múltiples canales en cada habitación.' },
+      { icon: '❄️', name: 'Aire Acondicionado',     desc: 'Clima confortable en tu habitación durante toda tu estadía.' },
+      { icon: '🚗', name: 'Garaje',                  desc: 'Estacionamiento privado y seguro sin costo adicional.' }
+    ]
+  },
+  restaurant: {
+    visible: true,
+    title: 'Sabores del Ecuador en tu mesa',
+    desc: 'Nuestro restaurante fusiona los sabores auténticos de la cocina ecuatoriana con toques contemporáneos. Ingredientes frescos, recetas de tradición y un ambiente cálido para compartir.',
+    features: ['Cocina ecuatoriana y continental', 'Desayuno, almuerzo y cena', 'Carta de bebidas artesanales', 'Servicio a la habitación disponible'],
+    image1: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80',
+    image2: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80',
+    image3: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80'
+  },
+  contact: {
+    address: 'Av. 25 de Agosto 12va Este,<br/>La Troncal, Cañar – Ecuador',
+    phone: '+593 7 200 0000',
+    email: 'reservas@troncalinn.com.ec',
+    checkin: '14h00', checkout: '12h00'
+  }
+};
+
+let data = {};
+
+/* ── HELPERS ── */
+function getData() {
+  try {
+    const s = localStorage.getItem('troncalinn_data');
+    return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULTS));
+  } catch { return JSON.parse(JSON.stringify(DEFAULTS)); }
+}
+
+function previewImg(inputId, previewId) {
+  const url = document.getElementById(inputId).value;
+  const img  = document.getElementById(previewId);
+  if (!img) return;
+  img.src = url || '';
+  // Logo specific: show/hide remove button
+  if (inputId === 'gen_logo') {
+    const rm = document.getElementById('gen_logoRemove');
+    img.style.display = url ? 'block' : 'none';
+    if (rm) rm.style.display = url ? 'inline-block' : 'none';
+  }
+}
+
+function removeLogo() {
+  document.getElementById('gen_logo').value = '';
+  const img = document.getElementById('gen_logoPreview');
+  img.src = ''; img.style.display = 'none';
+  document.getElementById('gen_logoRemove').style.display = 'none';
+}
+
+function showTab(name, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+  const titles = {
+    general:    ['General', 'Configura la información básica del hotel'],
+    hero:       ['Hero / Portada', 'Edita el título, subtítulo e imagen principal'],
+    rooms:      ['Habitaciones', 'Modifica nombres, precios y fotos de las habitaciones'],
+    gallery:    ['Galería', 'Agrega o quita imágenes de la galería'],
+    amenities:  ['Amenidades', 'Edita los servicios e instalaciones del hotel'],
+    restaurant: ['Restaurante', 'Información y fotos del restaurante'],
+    contact:    ['Contacto', 'Datos de contacto y horarios del hotel'],
+  };
+  document.getElementById('pageTitle').textContent = titles[name][0];
+  document.getElementById('pageSub').textContent   = titles[name][1];
+  return false;
+}
+
+/* ── RENDER FORMS ── */
+function renderRooms() {
+  const el = document.getElementById('roomsEditor');
+  el.innerHTML = data.rooms.map((r, i) => `
+    <div class="room-block">
+      <div class="room-block-title">
+        <div class="room-num">${i+1}</div>
+        Habitación ${i+1}
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" id="room_${i}_name" value="${r.name}" />
+        </div>
+        <div class="form-group">
+          <label>Precio por noche (USD $)</label>
+          <input type="number" id="room_${i}_price" value="${r.price}" min="1" />
+        </div>
+        <div class="form-group full">
+          <label>Descripción</label>
+          <textarea id="room_${i}_desc" rows="2">${r.desc}</textarea>
+        </div>
+        <div class="form-group full">
+          <label>Características (separadas por coma: AC, WiFi, Desayuno)</label>
+          <input type="text" id="room_${i}_features" value="${r.features}" />
+        </div>
+        <div class="form-group full">
+          <label>Imagen de la habitación</label>
+          <div class="img-field">
+            <div class="img-input-row">
+              <input type="text" id="room_${i}_image" value="${r.image}" placeholder="https://... o sube un archivo"
+                oninput="previewImg('room_${i}_image','room_${i}_preview')" />
+              <button class="btn-upload" onclick="uploadImage('room_${i}_image','room_${i}_preview')">📁 Subir foto</button>
+            </div>
+            <img class="img-preview" id="room_${i}_preview" src="${r.image}" alt="Vista previa" />
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderGallery() {
+  const el = document.getElementById('galleryEditor');
+  el.innerHTML = data.gallery.map((g, i) => `
+    <div class="gallery-item-edit" id="gitem_${i}">
+      <img src="${g.image}" alt="${g.alt}" onerror="this.src=''" style="width:100%;height:130px;object-fit:cover"/>
+      <div class="g-controls">
+        <div class="img-input-row" style="gap:.4rem">
+          <input type="text" id="g_${i}_url" value="${g.image}"
+            oninput="document.querySelector('#gitem_${i} img').src=this.value" placeholder="URL imagen..." style="font-size:.8rem;padding:.4rem .6rem"/>
+          <button class="btn-upload" style="padding:.4rem .6rem;font-size:.75rem" onclick="uploadImage('g_${i}_url',null,document.querySelector('#gitem_${i} img'))">📁</button>
+        </div>
+        <input type="text" id="g_${i}_alt" value="${g.alt}" placeholder="Descripción..." style="font-size:.8rem;padding:.4rem .6rem"/>
+        <button class="btn-del" onclick="removeGalleryItem(${i})">🗑 Eliminar</button>
+      </div>
+    </div>`).join('') +
+    `<div class="gallery-add-row">
+      <button class="btn-add-gallery" onclick="addGalleryItem('url')">
+        <span style="font-size:1.5rem">🔗</span>Agregar por URL
+      </button>
+      <button class="btn-add-gallery" onclick="addGalleryItem('file')">
+        <span style="font-size:1.5rem">📁</span>Subir foto
+      </button>
+    </div>`;
+  document.getElementById('statGallery').textContent = data.gallery.length;
+}
+
+function iconHtml(cls) {
+  return cls.startsWith('fa-')
+    ? `<i class="fa-solid ${cls}" style="font-size:1.8rem;color:var(--amber)"></i>`
+    : cls;
+}
+
+function renderAmenities() {
+  const el = document.getElementById('amenEditor');
+  el.innerHTML = data.amenities.items.map((a, i) => `
+    <div class="amen-block" id="amen_block_${i}">
+      <div class="amen-block-header" onclick="toggleAmen(${i})">
+        <div style="display:flex;align-items:center;gap:.8rem">
+          <span style="font-size:1.5rem">${a.icon}</span>
+          <span style="font-weight:700;font-size:.95rem">${a.name || 'Sin nombre'}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <button class="btn-del" style="font-size:.75rem;padding:.25rem .6rem" onclick="event.stopPropagation();removeAmenity(${i})">🗑</button>
+          <span class="amen-arrow" id="amen_arrow_${i}">▲</span>
+        </div>
+      </div>
+      <div class="amen-body" id="amen_body_${i}">
+        <div class="amen-inner">
+          <div>
+            <div class="amen-icon-preview" id="amen_icon_prev_${i}">${a.icon}</div>
+            <input type="text" id="amen_${i}_icon" value="${a.icon}" maxlength="4"
+              style="text-align:center;font-size:1.2rem;padding:.3rem;margin-top:.4rem;width:100%;border:2px solid var(--border);border-radius:8px;background:var(--cream);font-family:inherit;outline:none"
+              oninput="syncAmenIcon(${i},this.value)" />
+        <button class="emoji-pick-btn" onclick="openEmojiPicker(${i},this)">🎨 Elegir</button>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label>Nombre</label>
+            <input type="text" id="amen_${i}_name" value="${a.name}"
+              oninput="document.querySelector('#amen_block_${i} .amen-block-header span:nth-child(2)').textContent=this.value||'Sin nombre'" />
+          </div>
+          <div class="form-group" style="margin:0">
+            <label>Descripción</label>
+            <textarea id="amen_${i}_desc" rows="2">${a.desc}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>`).join('') +
+  `<button class="btn-add-amen" onclick="addAmenity()">＋ Agregar amenidad</button>`;
+  document.getElementById('statAmen').textContent = data.amenities.items.length;
+}
+
+function updateRestToggle(on) {
+  document.getElementById('rest_toggle_track').style.background = on ? '#2D6A4F' : '#ccc';
+  document.getElementById('rest_toggle_thumb').style.left = on ? '27px' : '3px';
+}
+
+function syncAmenIcon(i, val) {
+  document.getElementById(`amen_icon_prev_${i}`).textContent = val;
+  document.querySelector(`#amen_block_${i} .amen-block-header span:first-child`).textContent = val;
+}
+
+function toggleAmen(i) {
+  const body  = document.getElementById(`amen_body_${i}`);
+  const arrow = document.getElementById(`amen_arrow_${i}`);
+  const open  = body.style.maxHeight && body.style.maxHeight !== '0px';
+  body.style.maxHeight  = open ? '0px'    : body.scrollHeight + 'px';
+  body.style.opacity    = open ? '0'      : '1';
+  arrow.textContent     = open ? '▼'      : '▲';
+}
+
+function addAmenity() {
+  data.amenities.items.push({ icon: '⭐', name: 'Nueva amenidad', desc: 'Descripción del servicio.' });
+  renderAmenities();
+  // expand the new one
+  const i = data.amenities.items.length - 1;
+  const body = document.getElementById(`amen_body_${i}`);
+  if (body) { body.style.maxHeight = body.scrollHeight + 'px'; body.style.opacity = '1'; }
+  document.getElementById(`amen_arrow_${i}`).textContent = '▲';
+  document.getElementById(`amen_${i}_name`).focus();
+}
+
+function removeAmenity(i) {
+  if (!confirm(`¿Eliminar "${data.amenities.items[i].name}"?`)) return;
+  data.amenities.items.splice(i, 1);
+  renderAmenities();
+}
+
+function populateForms() {
+  // General
+  document.getElementById('gen_hotelName').value = data.general.hotelName;
+  const logoVal = data.general.logo || '';
+  document.getElementById('gen_logo').value = logoVal;
+  const logoPrev = document.getElementById('gen_logoPreview');
+  const logoRm   = document.getElementById('gen_logoRemove');
+  if (logoVal) { logoPrev.src = logoVal; logoPrev.style.display = 'block'; logoRm.style.display = 'inline-block'; }
+  else         { logoPrev.style.display = 'none'; logoRm.style.display = 'none'; }
+
+  // Hero
+  document.getElementById('hero_label').value    = data.hero.label;
+  document.getElementById('hero_title').value    = data.hero.title;
+  document.getElementById('hero_subtitle').value = data.hero.subtitle;
+  document.getElementById('hero_bgImage').value  = data.hero.bgImage;
+  document.getElementById('hero_bgPreview').src  = data.hero.bgImage;
+
+  // Rooms
+  renderRooms();
+
+  // Gallery
+  renderGallery();
+
+  // Amenities
+  document.getElementById('amen_image').value       = data.amenities.image;
+  document.getElementById('amen_imgPreview').src    = data.amenities.image;
+  document.getElementById('amen_badgeNum').value    = data.amenities.badgeNum;
+  document.getElementById('amen_badgeText').value   = data.amenities.badgeText;
+  renderAmenities();
+
+  // Restaurant
+  updateRestToggle(data.restaurant.visible !== false);
+  document.getElementById('rest_visible').checked = data.restaurant.visible !== false;
+  document.getElementById('rest_title').value    = data.restaurant.title;
+  document.getElementById('rest_desc').value     = data.restaurant.desc;
+  document.getElementById('rest_features').value = data.restaurant.features.join('\n');
+  document.getElementById('rest_image1').value   = data.restaurant.image1;
+  document.getElementById('rest_image2').value   = data.restaurant.image2;
+  document.getElementById('rest_image3').value   = data.restaurant.image3;
+  document.getElementById('rest_prev1').src = data.restaurant.image1;
+  document.getElementById('rest_prev2').src = data.restaurant.image2;
+  document.getElementById('rest_prev3').src = data.restaurant.image3;
+
+  // Contact
+  document.getElementById('contact_address').value  = data.contact.address;
+  document.getElementById('contact_phone').value    = data.contact.phone;
+  document.getElementById('contact_email').value    = data.contact.email;
+  document.getElementById('contact_checkin').value  = data.contact.checkin;
+  document.getElementById('contact_checkout').value = data.contact.checkout;
+
+  // Stats
+  document.getElementById('statRooms').textContent   = data.rooms.length;
+  document.getElementById('statRestFeat').textContent = data.restaurant.features.length;
+}
+
+/* ── COLLECT DATA FROM FORMS ── */
+function collectData() {
+  // General
+  data.general.hotelName = document.getElementById('gen_hotelName').value;
+  data.general.logo      = document.getElementById('gen_logo').value;
+
+  // Hero
+  data.hero.label    = document.getElementById('hero_label').value;
+  data.hero.title    = document.getElementById('hero_title').value;
+  data.hero.subtitle = document.getElementById('hero_subtitle').value;
+  data.hero.bgImage  = document.getElementById('hero_bgImage').value;
+
+  // Rooms
+  data.rooms = data.rooms.map((_, i) => ({
+    name:     document.getElementById(`room_${i}_name`).value,
+    price:    document.getElementById(`room_${i}_price`).value,
+    desc:     document.getElementById(`room_${i}_desc`).value,
+    features: document.getElementById(`room_${i}_features`).value,
+    image:    document.getElementById(`room_${i}_image`).value,
+  }));
+
+  // Gallery
+  data.gallery = data.gallery.map((_, i) => {
+    const urlEl = document.getElementById(`g_${i}_url`);
+    const altEl = document.getElementById(`g_${i}_alt`);
+    return urlEl ? { image: urlEl.value, alt: altEl ? altEl.value : '' } : null;
+  }).filter(Boolean);
+
+  // Amenities
+  data.amenities.image     = document.getElementById('amen_image').value;
+  data.amenities.badgeNum  = document.getElementById('amen_badgeNum').value;
+  data.amenities.badgeText = document.getElementById('amen_badgeText').value;
+  data.amenities.items = data.amenities.items.map((_, i) => ({
+    icon: document.getElementById(`amen_${i}_icon`).value,
+    name: document.getElementById(`amen_${i}_name`).value,
+    desc: document.getElementById(`amen_${i}_desc`).value,
+  }));
+
+  // Restaurant
+  data.restaurant.visible  = document.getElementById('rest_visible').checked;
+  data.restaurant.title    = document.getElementById('rest_title').value;
+  data.restaurant.desc     = document.getElementById('rest_desc').value;
+  data.restaurant.features = document.getElementById('rest_features').value.split('\n').map(s => s.trim()).filter(Boolean);
+  data.restaurant.image1   = document.getElementById('rest_image1').value;
+  data.restaurant.image2   = document.getElementById('rest_image2').value;
+  data.restaurant.image3   = document.getElementById('rest_image3').value;
+
+  // Contact
+  data.contact.address  = document.getElementById('contact_address').value;
+  data.contact.phone    = document.getElementById('contact_phone').value;
+  data.contact.email    = document.getElementById('contact_email').value;
+  data.contact.checkin  = document.getElementById('contact_checkin').value;
+  data.contact.checkout = document.getElementById('contact_checkout').value;
+}
+
+/* ── EMOJI PICKER ── */
+const EMOJI_CATS = [
+  { label: 'Agua & Piscina',    emojis: ['🏊','🏖️','🌊','🛁','🚿','💧','🤿','⛱️'] },
+  { label: 'Comida & Bebida',   emojis: ['🍳','🍽️','🥗','🍷','☕','🧁','🥂','🍹','🧃','🍴'] },
+  { label: 'Transporte',        emojis: ['✈️','🚗','🚌','🚁','⛵','🅿️','🚲','🛻','🚕'] },
+  { label: 'Entretenimiento',   emojis: ['🎾','⛳','🎮','📚','🎵','🎬','🎪','🎯','🎲','🎸'] },
+  { label: 'Bienestar & Salud', emojis: ['🧘','💪','💈','🌿','🌺','🌸','🧴','🏋️','🛀','💆'] },
+  { label: 'Hotel & Servicio',  emojis: ['🛏️','🔑','🛎️','🏨','🌅','⭐','🏆','🧹','🧺','🪴'] },
+  { label: 'Naturaleza',        emojis: ['☀️','❄️','🔥','🌴','🏔️','🌱','🌻','🦋','🌈','🌙'] },
+  { label: 'Familia & Mascotas',emojis: ['👨‍👩‍👧‍👦','🐕','🐈','🧸','🎡','👶','🐾','🦮','🐇'] },
+  { label: 'Tecnología',        emojis: ['📶','📡','💻','📱','🔌','📺','🖥️','🎙️'] },
+  { label: 'Seguridad',         emojis: ['🛡️','🔒','📹','💳','🏧','🚨','🔐'] },
+];
+
+let _emojiTarget = null;
+
+function openEmojiPicker(i, btn) {
+  _emojiTarget = i;
+  document.getElementById('emojiPopBody').innerHTML = EMOJI_CATS.map(cat => `
+    <div class="emoji-cat-label">${cat.label}</div>
+    <div class="emoji-row">
+      ${cat.emojis.map(e => `<button class="emoji-opt" onclick="pickEmoji('${e}')">${e}</button>`).join('')}
+    </div>`).join('');
+  const pop  = document.getElementById('emojiPopover');
+  const rect = btn.getBoundingClientRect();
+  const top  = rect.bottom + 8;
+  const left = Math.min(rect.left, window.innerWidth - 310);
+  // Si el popover se sale por abajo, ábrelo hacia arriba
+  pop.style.top  = (top + 420 > window.innerHeight ? rect.top - 428 : top) + 'px';
+  pop.style.left = Math.max(8, left) + 'px';
+  pop.classList.add('open');
+  setTimeout(() => document.addEventListener('click', outsideEmojiClick), 10);
+}
+
+function outsideEmojiClick(e) {
+  const pop = document.getElementById('emojiPopover');
+  if (!pop.contains(e.target) && !e.target.classList.contains('emoji-pick-btn')) {
+    closeEmojiPicker();
+  }
+}
+
+function closeEmojiPicker() {
+  document.getElementById('emojiPopover').classList.remove('open');
+  document.removeEventListener('click', outsideEmojiClick);
+}
+
+function pickEmoji(emoji) {
+  const i = _emojiTarget;
+  document.getElementById(`amen_${i}_icon`).value = emoji;
+  syncAmenIcon(i, emoji);
+  closeEmojiPicker();
+}
+
+/* ── ICON PICKER ── */
+const ICONS = [
+  { label:'Piscina',         cls:'fa-person-swimming' },
+  { label:'Pet Friendly',    cls:'fa-paw' },
+  { label:'Parqueadero',     cls:'fa-square-parking' },
+  { label:'WiFi',            cls:'fa-wifi' },
+  { label:'Aeropuerto',      cls:'fa-plane-departure' },
+  { label:'Desayuno',        cls:'fa-mug-saucer' },
+  { label:'Restaurante',     cls:'fa-utensils' },
+  { label:'Spa',             cls:'fa-spa' },
+  { label:'Gimnasio',        cls:'fa-dumbbell' },
+  { label:'Bar',             cls:'fa-martini-glass' },
+  { label:'Café',            cls:'fa-coffee' },
+  { label:'TV',              cls:'fa-tv' },
+  { label:'Aire acondicionado', cls:'fa-snowflake' },
+  { label:'Ducha',           cls:'fa-shower' },
+  { label:'Cama',            cls:'fa-bed' },
+  { label:'Concierge',       cls:'fa-bell-concierge' },
+  { label:'Seguridad',       cls:'fa-shield-halved' },
+  { label:'Familia',         cls:'fa-children' },
+  { label:'Negocios',        cls:'fa-briefcase' },
+  { label:'Llave',           cls:'fa-key' },
+  { label:'Playa',           cls:'fa-umbrella-beach' },
+  { label:'Jardín',          cls:'fa-tree' },
+  { label:'Ciudad',          cls:'fa-city' },
+  { label:'Montaña',         cls:'fa-mountain-sun' },
+  { label:'Bicicleta',       cls:'fa-bicycle' },
+  { label:'Lavandería',      cls:'fa-shirt' },
+  { label:'Médico',          cls:'fa-kit-medical' },
+  { label:'Accesibilidad',   cls:'fa-wheelchair' },
+  { label:'VIP',             cls:'fa-star' },
+  { label:'BBQ / Fuego',     cls:'fa-fire' },
+  { label:'Reloj 24h',       cls:'fa-clock' },
+  { label:'Ubicación',       cls:'fa-location-dot' },
+  { label:'Cámara',          cls:'fa-camera' },
+  { label:'Música',          cls:'fa-music' },
+  { label:'Biblioteca',      cls:'fa-book' },
+  { label:'Bus / Shuttle',   cls:'fa-bus' },
+  { label:'Barco',           cls:'fa-ship' },
+  { label:'Golf',            cls:'fa-golf-ball-tee' },
+  { label:'Tenis',           cls:'fa-table-tennis-paddle-ball' },
+  { label:'Juegos',          cls:'fa-gamepad' },
+  { label:'Teléfono',        cls:'fa-phone' },
+  { label:'Sol',             cls:'fa-sun' },
+  { label:'Vino',            cls:'fa-wine-glass' },
+  { label:'Terraza',         cls:'fa-building' },
+  { label:'Servicio hab.',   cls:'fa-bell' },
+  { label:'Corazón',         cls:'fa-heart' },
+  { label:'Maleta',          cls:'fa-suitcase' },
+  { label:'Voleibol',        cls:'fa-volleyball' },
+];
+
+let _pickerTarget = null;
+
+function openIconPicker(idx) {
+  _pickerTarget = idx;
+  document.getElementById('iconSearch').value = '';
+  renderIconGrid('');
+  document.getElementById('iconModal').style.display = 'flex';
+}
+
+function closeIconPicker() {
+  document.getElementById('iconModal').style.display = 'none';
+}
+
+function renderIconGrid(filter) {
+  const list = filter
+    ? ICONS.filter(ic => ic.label.toLowerCase().includes(filter.toLowerCase()))
+    : ICONS;
+  document.getElementById('iconGrid').innerHTML = list.length
+    ? list.map(ic => `
+        <button class="icon-btn" onclick="selectIcon('${ic.cls}')" title="${ic.label}">
+          <i class="fa-solid ${ic.cls}"></i>
+          <span>${ic.label}</span>
+        </button>`).join('')
+    : '<p style="grid-column:1/-1;color:var(--text-lt);font-size:.9rem;padding:.5rem">No se encontraron iconos</p>';
+}
+
+function filterIcons(val) { renderIconGrid(val); }
+
+function selectIcon(cls) {
+  const i = _pickerTarget;
+  document.getElementById(`amen_${i}_icon`).value = cls;
+  document.getElementById(`amen_icon_prev_${i}`).innerHTML = iconHtml(cls);
+  closeIconPicker();
+}
+
+/* ── UPLOAD IMAGE ── */
+function uploadImage(inputId, previewId, imgEl) {
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.onchange = function () {
+    const file = this.files[0];
+    if (!file) return;
+    if (file.size > 3 * 1024 * 1024) {
+      alert('La imagen supera 3MB. Usa una imagen más pequeña para que quepa en el almacenamiento local.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const dataUrl = e.target.result;
+      const input = document.getElementById(inputId);
+      if (input) input.value = dataUrl;
+      if (previewId) {
+        const prev = document.getElementById(previewId);
+        if (prev) prev.src = dataUrl;
+      }
+      if (imgEl) imgEl.src = dataUrl;
+      // Trigger logo show/hide logic
+      previewImg(inputId, previewId);
+    };
+    reader.readAsDataURL(file);
+  };
+  fileInput.click();
+}
+
+/* ── GALLERY ACTIONS ── */
+function addGalleryItem(mode) {
+  if (mode === 'file') {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = function () {
+      const file = this.files[0];
+      if (!file) return;
+      if (file.size > 3 * 1024 * 1024) {
+        alert('La imagen supera 3MB. Usa una imagen más pequeña.');
+        return;
+      }
+      const alt = file.name.replace(/\.[^.]+$/, '') || 'Foto hotel';
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        data.gallery.push({ image: e.target.result, alt });
+        renderGallery();
+      };
+      reader.readAsDataURL(file);
+    };
+    fileInput.click();
+  } else {
+    const url = prompt('Ingresa la URL de la imagen:');
+    if (!url) return;
+    const alt = prompt('Descripción corta de la imagen:') || 'Foto hotel';
+    data.gallery.push({ image: url, alt });
+    renderGallery();
+  }
+}
+
+function removeGalleryItem(i) {
+  if (!confirm('¿Eliminar esta foto de la galería?')) return;
+  data.gallery.splice(i, 1);
+  renderGallery();
+}
+
+/* ── SAVE / RESET ── */
+function saveData() {
+  collectData();
+  localStorage.setItem('troncalinn_data', JSON.stringify(data));
+  // update stats
+  document.getElementById('statRooms').textContent    = data.rooms.length;
+  document.getElementById('statGallery').textContent  = data.gallery.length;
+  document.getElementById('statAmen').textContent     = data.amenities.items.length;
+  document.getElementById('statRestFeat').textContent = data.restaurant.features.length;
+  showToast();
+}
+
+function resetData() {
+  if (!confirm('¿Restaurar todos los valores por defecto? Se perderán los cambios guardados.')) return;
+  localStorage.removeItem('troncalinn_data');
+  data = JSON.parse(JSON.stringify(DEFAULTS));
+  populateForms();
+  showToast('↩ Valores restaurados');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg || '✓ Cambios guardados correctamente';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ── SESIÓN ── */
+if (sessionStorage.getItem('troncalinn_auth') !== 'true') {
+  window.location.replace('login.html');
+}
+function logout() {
+  sessionStorage.removeItem('troncalinn_auth');
+  window.location.href = 'login.html';
+}
+
+/* ── INIT ── */
+data = getData();
+populateForms();
+</script>
+</body>
+</html>

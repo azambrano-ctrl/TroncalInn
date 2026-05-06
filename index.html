@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TroncalInn Hotel – La Troncal, Ecuador</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --amber:#C8860A; --amber-lt:#E9C46A; --green:#2D6A4F; --green-lt:#52B788;
+      --cream:#FDFAF3; --brown:#6B4226; --text:#2C2C2C; --text-lt:#6B6B6B;
+      --white:#FFFFFF; --nav-h:100px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;font-size:16px}
+    body{font-family:'Nunito',sans-serif;color:var(--text);background:var(--cream);overflow-x:hidden}
+    img{display:block;width:100%;object-fit:cover}
+    a{text-decoration:none;color:inherit}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;width:100%;z-index:999;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:var(--nav-h);transition:background .4s,box-shadow .4s}
+    nav.scrolled{background:rgba(253,250,243,.96);box-shadow:0 2px 20px rgba(0,0,0,.08);backdrop-filter:blur(8px)}
+    .nav-logo{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:600;color:var(--white);transition:color .4s}
+    nav.scrolled .nav-logo{color:var(--brown)}
+    .nav-links{display:flex;gap:2rem;list-style:none}
+    .nav-links a{font-size:.9rem;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.9);transition:color .3s;text-transform:uppercase}
+    nav.scrolled .nav-links a{color:var(--text)}
+    .nav-links a:hover{color:var(--amber-lt)}
+    nav.scrolled .nav-links a:hover{color:var(--amber)}
+    .nav-cta{background:var(--amber);color:var(--white)!important;padding:.45rem 1.2rem;border-radius:30px;transition:background .3s!important}
+    .nav-cta:hover{background:var(--brown)!important}
+
+    /* HERO */
+    #hero{position:relative;height:100vh;min-height:600px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+    .hero-bg{position:absolute;inset:-12px;z-index:0;background-size:cover;background-position:center;will-change:transform;filter:blur(5px)}
+    .hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,.45) 0%,rgba(0,0,0,.25) 60%,rgba(0,0,0,.5) 100%)}
+    .hero-content{position:relative;z-index:2;padding:0 1rem}
+    .hero-logo{max-height:110px;max-width:260px;object-fit:contain;margin:0 auto 1.2rem;display:block;filter:drop-shadow(0 2px 12px rgba(0,0,0,.4));opacity:0;transform:translateY(-20px)}
+    .hero-tagline{display:inline-block;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:var(--amber-lt);margin-bottom:1rem;opacity:0;transform:translateY(20px)}
+    .hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,7vw,5.5rem);color:var(--white);line-height:1.1;margin-bottom:1.2rem;opacity:0;transform:translateY(30px)}
+    .hero-subtitle{font-size:clamp(1rem,2vw,1.25rem);font-weight:300;color:rgba(255,255,255,.85);max-width:520px;margin:0 auto 2.5rem;opacity:0;transform:translateY(20px)}
+    .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;opacity:0;transform:translateY(20px)}
+    .btn-primary{background:var(--amber);color:var(--white);padding:.8rem 2.2rem;border-radius:30px;font-weight:600;font-size:.95rem;transition:background .3s,transform .2s}
+    .btn-primary:hover{background:var(--brown);transform:translateY(-2px)}
+    .btn-outline{border:2px solid rgba(255,255,255,.7);color:var(--white);padding:.8rem 2.2rem;border-radius:30px;font-weight:600;font-size:.95rem;transition:background .3s,border-color .3s}
+    .btn-outline:hover{background:rgba(255,255,255,.15);border-color:var(--white)}
+    .scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;animation:bounce 2s infinite}
+    .scroll-hint::after{content:'';display:block;width:1px;height:40px;background:rgba(255,255,255,.5)}
+    @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+
+    /* SECTIONS */
+    section{padding:100px 5%}
+    .section-label{font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:.6rem}
+    .section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);line-height:1.2;margin-bottom:1rem}
+    .section-desc{color:var(--text-lt);font-size:1.05rem;line-height:1.8;max-width:520px}
+    .divider{width:50px;height:3px;background:var(--amber-lt);border-radius:2px;margin:1rem 0 1.5rem}
+
+    /* HABITACIONES */
+    #habitaciones{background:var(--cream);padding-bottom:3rem}
+    .rooms-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;margin-top:3.5rem}
+    .room-card{border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07);background:var(--white);transition:transform .35s,box-shadow .35s}
+    .room-card:hover{transform:translateY(-8px);box-shadow:0 16px 40px rgba(0,0,0,.13)}
+    .room-img{height:240px}
+    .room-img img{height:100%}
+    .room-info{padding:1.5rem}
+    .room-name{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:.4rem;color:var(--brown)}
+    .room-desc{font-size:.9rem;color:var(--text-lt);line-height:1.7;margin-bottom:1rem}
+    .room-features{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1.2rem}
+    .feat-tag{font-size:.75rem;font-weight:600;letter-spacing:.5px;background:#f5f0e8;color:var(--brown);padding:.3rem .8rem;border-radius:20px}
+    .room-price{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f0ebe0;padding-top:1rem}
+    .price-amount{font-size:1.4rem;font-weight:700;color:var(--amber)}
+    .price-night{font-size:.8rem;color:var(--text-lt)}
+    .btn-sm{background:var(--green);color:var(--white);padding:.4rem 1.1rem;border-radius:20px;font-size:.85rem;font-weight:600;transition:background .3s}
+    .btn-sm:hover{background:var(--green-lt)}
+
+    /* GALERÍA */
+    #galeria{background:#f5f0e8;overflow:hidden;padding-top:3rem}
+    .gallery-header{max-width:500px}
+    .gallery-h-wrap{overflow:hidden;margin-top:3rem}
+    .gallery-h-track{display:flex;gap:1.5rem;width:max-content}
+    .gallery-h-track .g-item{width:380px;height:260px;border-radius:14px;overflow:hidden;flex-shrink:0}
+    .gallery-h-track .g-item img{height:100%;width:100%;object-fit:cover}
+    /* El pin-spacer de GSAP hereda el fondo de la galería */
+    #galeria .pin-spacer, .pin-spacer:has(#galeria){background:#f5f0e8}
+
+    /* AMENIDADES */
+    #amenidades{background:var(--cream);padding-bottom:3rem}
+    .amenities-wrap{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-top:2rem}
+    .amenities-img-col{position:relative}
+    .amenities-main-img{border-radius:20px;height:500px;overflow:hidden}
+    .amenities-badge{position:absolute;bottom:-1.5rem;right:-1.5rem;background:var(--amber);color:var(--white);border-radius:16px;padding:1.2rem 1.5rem;font-family:'Playfair Display',serif;box-shadow:0 8px 24px rgba(200,134,10,.35)}
+    .amenities-badge strong{display:block;font-size:2.2rem;line-height:1}
+    .amenities-badge span{font-size:.85rem}
+    .amenities-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+    .amenity-item{background:var(--white);border-radius:14px;padding:1.4rem;box-shadow:0 2px 12px rgba(0,0,0,.05);transition:box-shadow .3s}
+    .amenity-item:hover{box-shadow:0 6px 24px rgba(0,0,0,.1)}
+    .amenity-icon{font-size:2rem;margin-bottom:.6rem}
+    .amenity-icon i{font-size:2rem;color:var(--amber)}
+    .amenity-name{font-weight:600;font-size:1rem;margin-bottom:.3rem}
+    .amenity-desc{font-size:.85rem;color:var(--text-lt);line-height:1.6}
+
+    /* RESTAURANTE */
+    #restaurante{background:var(--green);color:var(--white);position:relative;overflow:hidden}
+    .rest-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;opacity:.18}
+    .rest-content{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+    .rest-label{color:var(--amber-lt)}
+    .rest-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);margin-bottom:1rem}
+    .rest-desc{color:rgba(255,255,255,.8);line-height:1.8;font-size:1.05rem;margin-bottom:2rem}
+    .rest-features{list-style:none;display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem}
+    .rest-features li{display:flex;align-items:center;gap:.8rem;color:rgba(255,255,255,.85);font-size:.95rem}
+    .rest-features li::before{content:'✦';color:var(--amber-lt);font-size:.7rem}
+    .btn-light{background:var(--amber-lt);color:var(--brown);padding:.8rem 2.2rem;border-radius:30px;font-weight:700;font-size:.95rem;display:inline-block;transition:background .3s,transform .2s}
+    .btn-light:hover{background:var(--white);transform:translateY(-2px)}
+    .rest-img-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .rest-img-col .ri{border-radius:14px;overflow:hidden}
+    .rest-img-col .ri:first-child{grid-column:1/-1;height:220px}
+    .rest-img-col .ri:not(:first-child){height:140px}
+
+    /* CONTACTO */
+    #contacto{background:var(--cream);padding-top:3rem}
+    .contact-wrap{display:grid;grid-template-columns:1fr 1.4fr;gap:4rem;align-items:start;margin-top:2rem}
+    .contact-info{display:flex;flex-direction:column;gap:1.5rem}
+    .info-item{display:flex;gap:1rem;align-items:flex-start}
+    .info-icon{background:var(--amber);color:var(--white);width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+    .info-label{font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-lt);margin-bottom:.2rem}
+    .info-val{font-weight:600;font-size:1rem}
+    .contact-form{background:var(--white);border-radius:20px;padding:2.5rem;box-shadow:0 4px 30px rgba(0,0,0,.07)}
+    .form-title{font-family:'Playfair Display',serif;font-size:1.6rem;margin-bottom:1.5rem}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .form-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+    .form-group label{font-size:.85rem;font-weight:600;color:var(--text-lt)}
+    .form-group input,.form-group select,.form-group textarea{border:2px solid #e8e2d5;border-radius:10px;padding:.75rem 1rem;font-family:'Nunito',sans-serif;font-size:.95rem;color:var(--text);transition:border-color .3s;outline:none;background:var(--cream)}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--amber)}
+    .form-group textarea{resize:vertical;min-height:100px}
+    .btn-form{width:100%;background:var(--amber);color:var(--white);border:none;padding:.9rem;border-radius:30px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:background .3s,transform .2s;margin-top:.5rem}
+    .btn-form:hover{background:var(--brown);transform:translateY(-2px)}
+
+    /* FOOTER */
+    footer{background:var(--brown);color:rgba(255,255,255,.8);padding:2.5rem 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+    .footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--white)}
+    .footer-copy{font-size:.85rem}
+    .social-links{display:flex;gap:1rem}
+    .social-links a{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:background .3s,transform .2s;color:var(--white)}
+    .social-links a:hover{transform:translateY(-3px)}
+    .social-links a:hover{background:var(--amber)}
+
+    /* PROGRESS */
+    #progress{position:fixed;top:0;left:0;height:3px;background:var(--amber);width:0%;z-index:1000;transition:width .1s linear}
+
+    .footer-logo{cursor:default;user-select:none}
+
+    @media(max-width:768px){
+      .nav-links{display:none}
+      .amenities-wrap,.rest-content,.contact-wrap{grid-template-columns:1fr;gap:2.5rem}
+      .amenities-badge{right:1rem}
+      .rest-img-col{display:none}
+      .form-row{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav id="navbar">
+  <div class="nav-logo" id="navBrand">
+    <div id="navLogoWrap" style="display:none">
+      <img id="navLogoImg" src="" alt="TroncalInn" style="height:140px;max-width:400px;object-fit:contain;display:block" />
+    </div>
+    <span id="navText">TroncalInn</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#habitaciones">Habitaciones</a></li>
+    <li><a href="#galeria">Galería</a></li>
+    <li><a href="#amenidades">Amenidades</a></li>
+    <li><a href="#restaurante">Restaurante</a></li>
+    <li><a href="#contacto" class="nav-cta">Reservar</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-tagline" id="heroLabel"></p>
+    <h1 class="hero-title" id="heroTitle"></h1>
+    <p class="hero-subtitle" id="heroSubtitle"></p>
+    <div class="hero-btns">
+      <a href="#contacto" class="btn-primary">Reservar ahora</a>
+      <a href="#habitaciones" class="btn-outline">Ver habitaciones</a>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<!-- HABITACIONES -->
+<section id="habitaciones">
+  <div data-aos="fade-up">
+    <p class="section-label">Nuestras habitaciones</p>
+    <h2 class="section-title">Confort para cada viajero</h2>
+    <div class="divider"></div>
+    <p class="section-desc">Habitaciones diseñadas para ofrecerte descanso real, con todo lo que necesitas en un ambiente acogedor y contemporáneo.</p>
+  </div>
+  <div class="rooms-grid" id="roomsGrid"></div>
+
+  <div data-aos="fade-up" style="margin-top:2rem;background:#fff8e8;border:2px solid var(--amber-lt);border-radius:14px;padding:1.1rem 1.5rem;display:flex;align-items:flex-start;gap:.8rem;max-width:600px">
+    <span style="font-size:1.3rem;flex-shrink:0">ℹ️</span>
+    <div>
+      <strong style="font-size:.9rem;color:var(--brown)">Tarifas adicionales para niños</strong>
+      <p style="font-size:.85rem;color:var(--text-lt);margin-top:.25rem;line-height:1.6">
+        Niños de <strong>2 a 12 años:</strong> $10 adicional por noche &nbsp;·&nbsp;
+        De <strong>13 años en adelante:</strong> $15 adicional por noche.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- GALERÍA -->
+<section id="galeria">
+  <div class="gallery-header" data-aos="fade-up">
+    <p class="section-label">Galería</p>
+    <h2 class="section-title">Vive la experiencia</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="gallery-h-wrap">
+    <div class="gallery-h-track" id="galleryTrack"></div>
+  </div>
+</section>
+
+<!-- AMENIDADES -->
+<section id="amenidades">
+  <div class="amenities-wrap">
+    <div class="amenities-img-col" data-aos="fade-right">
+      <div class="amenities-main-img">
+        <img id="amenitiesImg" src="" alt="TroncalInn amenidades" />
+      </div>
+      <div class="amenities-badge">
+        <strong id="amenBadgeNum">10+</strong>
+        <span id="amenBadgeText">Años de<br/>experiencia</span>
+      </div>
+    </div>
+    <div data-aos="fade-left">
+      <p class="section-label">Servicios</p>
+      <h2 class="section-title">Todo lo que necesitas, en un solo lugar</h2>
+      <div class="divider"></div>
+      <p class="section-desc" style="margin-bottom:2rem">Pensamos en cada detalle para que tu estadía sea perfecta, cómoda y memorable.</p>
+      <div class="amenities-grid" id="amenitiesGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- RESTAURANTE -->
+<section id="restaurante">
+  <div class="rest-bg" id="restBg"></div>
+  <div class="rest-content">
+    <div data-aos="fade-right">
+      <p class="section-label rest-label">Gastronomía</p>
+      <h2 class="rest-title" id="restTitle"></h2>
+      <p class="rest-desc" id="restDesc"></p>
+      <ul class="rest-features" id="restFeatures"></ul>
+      <a href="#contacto" class="btn-light">Hacer reservación</a>
+    </div>
+    <div class="rest-img-col" data-aos="fade-left" id="restImgCol"></div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div data-aos="fade-up">
+    <p class="section-label">Contáctanos</p>
+    <h2 class="section-title">Haz tu reserva</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="contact-wrap">
+    <div class="contact-info" data-aos="fade-right">
+      <div class="info-item">
+        <div class="info-icon">📍</div>
+        <div>
+          <div class="info-label">Dirección</div>
+          <div class="info-val" id="contactAddress"></div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">📞</div>
+        <div>
+          <div class="info-label">Teléfono</div>
+          <div class="info-val" id="contactPhone"></div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">✉️</div>
+        <div>
+          <div class="info-label">Email</div>
+          <div class="info-val" id="contactEmail"></div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">🕐</div>
+        <div>
+          <div class="info-label">Check-in / Check-out</div>
+          <div class="info-val" id="contactTimes"></div>
+        </div>
+      </div>
+      <div id="hotelMap" style="border-radius:16px;overflow:hidden;height:260px;box-shadow:0 6px 24px rgba(0,0,0,.15);border:3px solid var(--amber-lt)"></div>
+    </div>
+    <div class="contact-form" data-aos="fade-left">
+      <h3 class="form-title">Consulta disponibilidad</h3>
+      <form onsubmit="handleForm(event)">
+        <div class="form-row">
+          <div class="form-group"><label>Nombre</label><input type="text" placeholder="Tu nombre" required /></div>
+          <div class="form-group"><label>Email</label><input type="email" placeholder="tu@email.com" required /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Check-in</label><input type="date" required /></div>
+          <div class="form-group"><label>Check-out</label><input type="date" required /></div>
+        </div>
+        <div class="form-group">
+          <label>Tipo de habitación</label>
+          <select id="roomSelect"></select>
+        </div>
+        <div class="form-group"><label>Mensaje (opcional)</label><textarea placeholder="¿Alguna solicitud especial?"></textarea></div>
+        <button type="submit" class="btn-form">Enviar consulta</button>
+      </form>
+    </div>
+  </div>
+
+</section>
+
+<footer>
+  <div class="footer-logo" id="footerLogo">TroncalInn</div>
+  <p class="footer-copy" id="footerCopy"></p>
+  <div class="social-links">
+    <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+    <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+    <a href="#" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+  </div>
+</footer>
+
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+/* ── DATOS POR DEFECTO ── */
+const DEFAULTS = {
+  general: { hotelName: 'TroncalInn', logo: '' },
+  hero: {
+    label: 'La Troncal · Ecuador',
+    title: 'Bienvenido a<br /><em>TroncalInn</em>',
+    subtitle: 'Un refugio de confort y calidez en el corazón del Ecuador. Descanso auténtico, atención personalizada.',
+    bgImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1800&q=80'
+  },
+  rooms: [
+    { name: 'Individual',  desc: 'Ideal para viajeros que buscan comodidad y privacidad.',                                            price: '25', features: 'WiFi,TV Cable,Baño Privado,AC',        image: 'images/hab-individual.webp' },
+    { name: 'Matrimonial', desc: 'Perfecta para parejas, con una cómoda cama doble.',                                                price: '30', features: 'WiFi,TV Cable,Baño Privado,AC',        image: 'images/hab-matrimonial.jpg' },
+    { name: 'Doble',       desc: 'Equipada con dos camas individuales, ideal para amigos o compañeros de trabajo.',                  price: '35', features: 'WiFi,TV Cable,Baño Privado,AC',        image: 'images/hab-doble.webp'      },
+    { name: 'Triple',      desc: 'Espaciosa habitación con tres camas individuales o una doble y una individual.',                   price: '50', features: 'WiFi,TV Cable,Baño Privado,AC,Garaje', image: 'images/hab-triple.jpg'      },
+    { name: 'Cuádruple',   desc: 'La opción más amplia para familias o grupos, con capacidad para cuatro personas.',                 price: '65', features: 'WiFi,TV Cable,Baño Privado,AC,Garaje', image: 'images/hab-cuadruple.webp'  }
+  ],
+  gallery: [
+    { image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&q=80', alt: 'Lobby' },
+    { image: 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800&q=80', alt: 'Piscina' },
+    { image: 'https://images.unsplash.com/photo-1551882547-ff40c4fe1da0?w=800&q=80', alt: 'Habitación' },
+    { image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', alt: 'Restaurante' },
+    { image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800&q=80', alt: 'Jardín' },
+    { image: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800&q=80', alt: 'Bar' }
+  ],
+  amenities: {
+    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80',
+    badgeNum: '10+', badgeText: 'Años de experiencia',
+    items: [
+      { icon: '📶', name: 'WiFi de alta velocidad', desc: 'Conexión rápida en todas las habitaciones y áreas comunes.' },
+      { icon: '🚿', name: 'Baño privado',           desc: 'Baño privado con agua caliente disponible las 24 horas.' },
+      { icon: '📺', name: 'TV por cable',            desc: 'Televisión por cable con múltiples canales en cada habitación.' },
+      { icon: '❄️', name: 'Aire Acondicionado',     desc: 'Clima confortable en tu habitación durante toda tu estadía.' },
+      { icon: '🚗', name: 'Garaje',                  desc: 'Estacionamiento privado y seguro sin costo adicional.' }
+    ]
+  },
+  restaurant: {
+    visible: true,
+    title: 'Sabores del Ecuador en tu mesa',
+    desc: 'Nuestro restaurante fusiona los sabores auténticos de la cocina ecuatoriana con toques contemporáneos. Ingredientes frescos, recetas de tradición y un ambiente cálido para compartir.',
+    features: ['Cocina ecuatoriana y continental', 'Desayuno, almuerzo y cena', 'Carta de bebidas artesanales', 'Servicio a la habitación disponible'],
+    image1: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80',
+    image2: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80',
+    image3: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80'
+  },
+  contact: {
+    address: 'Av. 25 de Agosto 12va Este,<br/>La Troncal, Cañar – Ecuador',
+    phone: '+593 7 200 0000',
+    email: 'reservas@troncalinn.com.ec',
+    checkin: '14h00', checkout: '12h00'
+  }
+};
+
+/* ── CARGAR DATOS ── */
+function getData() {
+  try {
+    const saved = localStorage.getItem('troncalinn_data');
+    return saved ? JSON.parse(saved) : DEFAULTS;
+  } catch { return DEFAULTS; }
+}
+
+/* ── RENDERIZAR PÁGINA ── */
+function render() {
+  const d = getData();
+
+  // General
+  document.title = d.general.hotelName + ' – La Troncal, Ecuador';
+  document.getElementById('navText').textContent = d.general.hotelName;
+  document.getElementById('footerLogo').textContent = d.general.hotelName;
+  document.getElementById('footerCopy').textContent = `© ${new Date().getFullYear()} ${d.general.hotelName} Hotel. La Troncal, Ecuador.`;
+
+  // Logo en navbar
+  const navLogoImg  = document.getElementById('navLogoImg');
+  const navLogoWrap = document.getElementById('navLogoWrap');
+  const navText     = document.getElementById('navText');
+  if (d.general.logo) {
+    navLogoImg.src = d.general.logo;
+    navLogoWrap.style.display = 'inline-block';
+    navText.style.display     = 'none';
+  } else {
+    navLogoWrap.style.display = 'none';
+    navText.style.display     = 'inline';
+  }
+
+  // Hero
+  document.getElementById('heroBg').style.backgroundImage = `url('${d.hero.bgImage}')`;
+  document.getElementById('heroLabel').textContent = d.hero.label;
+  document.getElementById('heroTitle').innerHTML = d.hero.title;
+  document.getElementById('heroSubtitle').textContent = d.hero.subtitle;
+
+  // Rooms
+  const grid = document.getElementById('roomsGrid');
+  const sel  = document.getElementById('roomSelect');
+  grid.innerHTML = '';
+  sel.innerHTML  = '<option value="">Seleccionar...</option>';
+  d.rooms.forEach((r, i) => {
+    const feats = r.features.split(',').map(f => `<span class="feat-tag">${f.trim()}</span>`).join('');
+    grid.innerHTML += `
+      <div class="room-card" data-aos="fade-up" data-aos-delay="${i*100}">
+        <div class="room-img"><img src="${r.image}" alt="${r.name}" loading="lazy"/></div>
+        <div class="room-info">
+          <h3 class="room-name">${r.name}</h3>
+          <p class="room-desc">${r.desc}</p>
+          <div class="room-features">${feats}</div>
+          <div class="room-price">
+            <div><div class="price-amount">$${r.price}</div><div class="price-night">por noche</div></div>
+            <a href="#contacto" class="btn-sm">Reservar</a>
+          </div>
+        </div>
+      </div>`;
+    sel.innerHTML += `<option>${r.name}</option>`;
+  });
+
+  // Gallery
+  const track = document.getElementById('galleryTrack');
+  track.innerHTML = d.gallery.map(g =>
+    `<div class="g-item"><img src="${g.image}" alt="${g.alt}" loading="lazy"/></div>`
+  ).join('');
+  initGalleryScroll();
+
+  // Amenities
+  document.getElementById('amenitiesImg').src = d.amenities.image;
+  document.getElementById('amenBadgeNum').textContent = d.amenities.badgeNum;
+  document.getElementById('amenBadgeText').innerHTML = d.amenities.badgeText;
+  const ag = document.getElementById('amenitiesGrid');
+  ag.innerHTML = d.amenities.items.map((a, i) => `
+    <div class="amenity-item" data-aos="zoom-in" data-aos-delay="${i*80}">
+      <div class="amenity-icon">${a.icon}</div>
+      <div class="amenity-name">${a.name}</div>
+      <div class="amenity-desc">${a.desc}</div>
+    </div>`).join('');
+
+  // Restaurant visibility
+  const restSection = document.getElementById('restaurante');
+  const restNavLink = document.querySelector('a[href="#restaurante"]');
+  const restVisible = d.restaurant.visible !== false;
+  restSection.style.display = restVisible ? '' : 'none';
+  if (restNavLink) restNavLink.parentElement.style.display = restVisible ? '' : 'none';
+
+  // Restaurant
+  document.getElementById('restBg').style.backgroundImage =
+    `url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80')`;
+  document.getElementById('restTitle').textContent = d.restaurant.title;
+  document.getElementById('restDesc').textContent  = d.restaurant.desc;
+  document.getElementById('restFeatures').innerHTML =
+    d.restaurant.features.map(f => `<li>${f}</li>`).join('');
+  document.getElementById('restImgCol').innerHTML = `
+    <div class="ri"><img src="${d.restaurant.image1}" alt="Restaurante interior" loading="lazy"/></div>
+    <div class="ri"><img src="${d.restaurant.image2}" alt="Comida" loading="lazy"/></div>
+    <div class="ri"><img src="${d.restaurant.image3}" alt="Ambiente" loading="lazy"/></div>`;
+
+  // Contact
+  document.getElementById('contactAddress').innerHTML = d.contact.address;
+  document.getElementById('contactPhone').textContent  = d.contact.phone;
+  document.getElementById('contactEmail').textContent  = d.contact.email;
+  document.getElementById('contactTimes').textContent  =
+    `Check-in: ${d.contact.checkin} · Check-out: ${d.contact.checkout}`;
+}
+
+render();
+
+/* ── AOS & GSAP ── */
+AOS.init({ duration: 750, once: true, offset: 80 });
+gsap.registerPlugin(ScrollTrigger);
+
+gsap.to('#heroBg', {
+  yPercent: 35, ease: 'none',
+  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
+});
+
+const heroTl = gsap.timeline({ delay: .3 });
+heroTl
+  .to('.hero-tagline',  { opacity:1, y:0, duration:.7, ease:'power2.out' }, '-=.3')
+  .to('.hero-title',    { opacity:1, y:0, duration:.7, ease:'power2.out' }, '-=.4')
+  .to('.hero-subtitle', { opacity:1, y:0, duration:.6, ease:'power2.out' }, '-=.4')
+  .to('.hero-btns',     { opacity:1, y:0, duration:.6, ease:'power2.out' }, '-=.3');
+
+function initGalleryScroll() {
+  // Matar instancias previas para evitar duplicados
+  ScrollTrigger.getAll()
+    .filter(st => st.vars.trigger === '#galeria')
+    .forEach(st => st.kill());
+
+  const track = document.getElementById('galleryTrack');
+  if (!track || !track.children.length) return;
+
+  // Forzar un reflow para que scrollWidth esté calculado
+  ScrollTrigger.refresh();
+
+  const wrap      = track.parentElement;
+  const trackWidth = track.scrollWidth - wrap.offsetWidth;
+  if (trackWidth <= 0) return;
+
+  gsap.to(track, {
+    x: -trackWidth,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '#galeria',
+      start: 'top top',
+      end: '+=' + trackWidth,
+      scrub: 1,
+      pin: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true
+    }
+  });
+}
+
+gsap.utils.toArray('.section-title').forEach(el => {
+  gsap.fromTo(el, { x:-40, opacity:0 }, {
+    x:0, opacity:1, duration:.8, ease:'power2.out',
+    scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+  });
+});
+
+/* NAV */
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 60), { passive:true });
+
+/* Progress */
+const prog = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  prog.style.width = (scrollY / (document.body.scrollHeight - innerHeight) * 100) + '%';
+}, { passive:true });
+
+/* ── ACCESO SECRETO: 5 clics en logo del footer ── */
+(function() {
+  let clicks = 0, timer;
+  document.getElementById('footerLogo').addEventListener('click', () => {
+    clicks++;
+    clearTimeout(timer);
+    if (clicks >= 5) { window.location.href = 'login.html'; return; }
+    timer = setTimeout(() => { clicks = 0; }, 1500);
+  });
+})();
+
+/* Form */
+function handleForm(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('.btn-form');
+  btn.textContent = '✓ Consulta enviada – te contactaremos pronto';
+  btn.style.background = '#2D6A4F';
+  btn.disabled = true;
+}
+</script>
+
+<!-- LEAFLET MAP -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const hotelLat = -2.432483;
+  const hotelLon = -79.334175;
+  const map = L.map('hotelMap', { zoomControl:true, scrollWheelZoom:true }).setView([hotelLat, hotelLon], 18);
+
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles © Esri',
+    maxZoom: 19
+  }).addTo(map);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+    subdomains:'abcd', maxZoom:19, pane:'overlayPane'
+  }).addTo(map);
+
+  const icon = L.divIcon({
+    html: `<div style="background:#C8860A;color:#fff;border-radius:50% 50% 50% 0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transform:rotate(-45deg);box-shadow:0 3px 10px rgba(0,0,0,.4)"><span style="transform:rotate(45deg)">🏨</span></div>`,
+    className:'', iconSize:[36,36], iconAnchor:[18,36], popupAnchor:[0,-36]
+  });
+
+  L.marker([hotelLat, hotelLon], { icon })
+    .addTo(map)
+    .bindPopup('<strong>TroncalInn Hotel</strong><br>Av. 25 de Agosto y 12va Este<br>La Troncal, Cañar – Ecuador')
+    .openPopup();
+</script>
+</body>
+</html>
